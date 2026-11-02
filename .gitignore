@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Test / coverage
+.coverage
+coverage.xml
+htmlcov/
+
+# Lint / type-check / JS tooling caches
+.ruff_cache/
+.mypy_cache/
+node_modules/
+package-lock.json
+
+# Editors / IDEs / OS
+.idea/
+.vscode/
+*~
+*.swp
+.DS_Store
+Thumbs.db
+
+# Tooling
+**/.gitignore
+!/.gitignore
+**/.gitlab-ci.yml
+!/.gitlab-ci.yml
+**/ruff.toml
+!/ruff.toml
+**/.pre-commit-config.yaml
+!/.pre-commit-config.yaml
+**/eslint.config.cjs
+!/eslint.config.cjs
+**/package.json
+!/package.json
+**/.prettierrc
+!/.prettierrc
+**/.prettierignore
+!/.prettierignore
+**/.coveragerc
+!/.coveragerc
+**/.editorconfig
+!/.editorconfig
+**/.gitattributes
+!/.gitattributes
