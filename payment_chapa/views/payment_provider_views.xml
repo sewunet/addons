@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_provider_form" model="ir.ui.view">
+        <field name="name">Chapa Provider Form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <group invisible="code != 'chapa'" name="chapa_credentials">
+                    <field name="chapa_secret_key" string="Secret Key" password="True"
+                           required="code == 'chapa' and state != 'disabled'"/>
+                    <field name="chapa_webhook_secret" string="Webhook Secret" password="True"/>
+                    <field name="chapa_checkout_mode" string="Checkout"/>
+                    <field name="chapa_direct_methods" string="Wallets offered"
+                           invisible="chapa_checkout_mode != 'direct'"
+                           required="code == 'chapa' and state != 'disabled' and chapa_checkout_mode == 'direct'"/>
+                    <field name="chapa_encryption_key" string="Encryption Key" password="True"
+                           invisible="chapa_checkout_mode != 'direct'"/>
+                    <field name="chapa_public_key" string="Public Key"
+                           invisible="chapa_checkout_mode != 'html'"
+                           required="code == 'chapa' and state != 'disabled' and chapa_checkout_mode == 'html'"/>
+                    <div colspan="2" class="text-muted">
+                        Webhook URL: <code>&lt;your-domain&gt;/payment/chapa/webhook</code>.
+                        Without the webhook secret, notifications are refused.
+                        Transactions the webhook never confirms are re-checked
+                        with Chapa by a scheduled action every few minutes.
+                    </div>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

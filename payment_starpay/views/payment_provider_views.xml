@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_provider_form" model="ir.ui.view">
+        <field name="name">Star-Pay Provider Form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <group invisible="code != 'starpay'" name="starpay_credentials">
+                    <field name="starpay_base_url"
+                           string="API URL"
+                           required="code == 'starpay' and state != 'disabled'"/>
+                    <field name="starpay_api_secret"
+                           string="API Secret"
+                           required="code == 'starpay' and state != 'disabled'"
+                           password="True"/>
+                    <field name="starpay_webhook_secret"
+                           string="Webhook Secret"
+                           required="code == 'starpay' and state != 'disabled'"
+                           password="True"/>
+                    <field name="starpay_product_id"
+                           invisible="code != 'starpay'"/>
+                    <field name="starpay_redirect_url"
+                           string="Redirect URL"
+                           placeholder="https://your-domain/payment/starpay/return"/>
+                    <field name="starpay_callback_url"
+                           string="Callback URL"
+                           placeholder="https://your-domain/payment/starpay/webhook"/>
+                    <div colspan="2" class="text-muted">
+                        Both are sent with every order. The callback URL must be
+                        reachable from the internet: it is how Star-Pay reports
+                        a payment the moment it is made.
+                    </div>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

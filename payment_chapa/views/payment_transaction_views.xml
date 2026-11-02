@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      "Verify with Chapa" on the transaction. For the case the cron covers
+      too, but a person is looking at it now: a member says they paid, the
+      webhook never arrived, and the office wants the answer this minute
+      rather than at the next tick.
+    -->
+    <record id="payment_transaction_form_chapa" model="ir.ui.view">
+        <field name="name">payment.transaction.form.chapa</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_chapa_verify" type="object"
+                        string="Verify with Chapa" class="btn-primary"
+                        invisible="provider_code != 'chapa' or state in ('done', 'cancel')"
+                        help="Asks Chapa for the authoritative status. If the payment went through, this posts it to the journal, reconciles the invoice and marks the membership fee paid, all at once."/>
+            </xpath>
+            <!-- What a direct charge did: which wallet, which phone, how it authorises. -->
+            <xpath expr="//group[@name='transaction_details']" position="after">
+                <group name="chapa_direct" string="Chapa Direct Charge" invisible="provider_code != 'chapa' or not chapa_direct_method">
+                    <field name="chapa_direct_method"/>
+                    <field name="chapa_mobile"/>
+                    <field name="chapa_auth_type"/>
+                    <field name="chapa_portal_url" widget="url" invisible="not chapa_portal_url"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The same, for a selection in the list. -->
+    <record id="action_chapa_verify_selected" model="ir.actions.server">
+        <field name="name">Verify with Chapa</field>
+        <field name="model_id" ref="payment.model_payment_transaction"/>
+        <field name="binding_model_id" ref="payment.model_payment_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.action_chapa_verify()</field>
+    </record>
+</odoo>

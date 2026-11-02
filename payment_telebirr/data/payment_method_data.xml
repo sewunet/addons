@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!--
+      telebirr is a single mobile wallet, not an aggregator: the payer always
+      pays from their telebirr balance, so one method covers the provider
+      exactly.
+
+      `active` is False so the method only appears once the provider is
+      enabled; `_get_default_payment_method_codes` activates it at that point.
+    -->
+    <record id="payment_method_telebirr" model="payment.method">
+        <field name="name">telebirr</field>
+        <field name="code">telebirr</field>
+        <field name="sequence">1000</field>
+        <field name="active">False</field>
+        <field name="image" type="base64" file="payment_telebirr/static/img/telebirr.png"/>
+        <field name="support_tokenization">False</field>
+        <field name="support_express_checkout">False</field>
+        <field name="support_manual_capture">none</field>
+        <!--
+          The merchant pack describes a refund API, but this module's request
+          signing has not been verified against Ethio Telecom's live gateway,
+          so refunds are not offered. See the note in telebirr_crypto.py.
+        -->
+        <field name="support_refund">none</field>
+        <!--
+          Currency is restricted, country is not. A telebirr wallet holds birr
+          only, so a non-ETB order genuinely cannot be paid this way. The
+          payer's country is a different question and is left open.
+        -->
+        <field name="supported_currency_ids"
+               eval="[Command.set([
+                         ref('base.ETB'),
+                     ])]"
+        />
+    </record>
+
+</odoo>

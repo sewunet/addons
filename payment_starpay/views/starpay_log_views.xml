@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="starpay_request_log_view_list" model="ir.ui.view">
+        <field name="model">starpay.request.log</field>
+        <field name="arch" type="xml">
+            <list string="Star-Pay Log" create="false" edit="false"
+                  decoration-danger="state == 'failed'" decoration-muted="direction == 'in'">
+                <field name="create_date" string="When"/>
+                <field name="direction"/>
+                <field name="endpoint"/>
+                <field name="reference" optional="show"/>
+                <field name="provider_reference" optional="show"/>
+                <field name="http_status" string="HTTP"/>
+                <field name="error_code"/>
+                <field name="error_message" optional="show"/>
+                <field name="duration_ms" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'ok'" decoration-danger="state == 'failed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="starpay_request_log_view_form" model="ir.ui.view">
+        <field name="model">starpay.request.log</field>
+        <field name="arch" type="xml">
+            <form string="Star-Pay Exchange" create="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="endpoint" readonly="1"/></h1>
+                        <h3><field name="state" widget="badge"
+                                   decoration-success="state == 'ok'"
+                                   decoration-danger="state == 'failed'"/></h3>
+                    </div>
+                    <group>
+                        <group string="Exchange">
+                            <field name="create_date" string="When"/>
+                            <field name="direction"/>
+                            <field name="method"/>
+                            <field name="url" widget="url"/>
+                            <field name="duration_ms"/>
+                        </group>
+                        <group string="Subject">
+                            <field name="provider_id"/>
+                            <field name="reference"/>
+                            <field name="provider_reference"/>
+                            <field name="http_status"/>
+                            <field name="error_code"/>
+                            <field name="error_message"/>
+                            <field name="signature_check" invisible="direction != 'in' or not signature_check"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Request" name="request">
+                            <field name="request_body" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                        </page>
+                        <page string="Headers" name="headers" invisible="not request_headers">
+                            <field name="request_headers" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                        </page>
+                        <page string="Response" name="response">
+                            <field name="response_body" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="starpay_request_log_view_search" model="ir.ui.view">
+        <field name="model">starpay.request.log</field>
+        <field name="arch" type="xml">
+            <search string="Star-Pay Log">
+                <field name="reference"/>
+                <field name="provider_reference"/>
+                <field name="error_code"/>
+                <field name="endpoint"/>
+                <filter name="failed" string="Failed" domain="[('state', '=', 'failed')]"/>
+                <filter name="sent" string="Sent" domain="[('direction', '=', 'out')]"/>
+                <filter name="received" string="Received" domain="[('direction', '=', 'in')]"/>
+                <separator/>
+                <filter name="today" string="Today"
+                        domain="[('create_date', '>=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <group>
+                    <filter name="by_endpoint" string="Endpoint" context="{'group_by': 'endpoint'}"/>
+                    <filter name="by_code" string="Error code" context="{'group_by': 'error_code'}"/>
+                    <filter name="by_state" string="Outcome" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="starpay_request_log_action" model="ir.actions.act_window">
+        <field name="name">Star-Pay Log</field>
+        <field name="res_model">starpay.request.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing has been sent to Star-Pay yet.</p>
+            <p>
+                Every order, every status check and every callback appears here, with
+                the request that was sent and the answer that came back.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="starpay_log_menu"
+              name="Star-Pay Log"
+              parent="base.menu_administration"
+              action="starpay_request_log_action"
+              groups="base.group_system"
+              sequence="95"/>
+
+    <!-- The same list, from the provider itself: somebody looking at a
+         refusal is already on that form. -->
+    <record id="payment_provider_form_starpay_log" model="ir.ui.view">
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button type="object"
+                        name="action_view_starpay_log"
+                        class="oe_stat_button"
+                        icon="fa-exchange"
+                        invisible="code != 'starpay'">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Star-Pay</span>
+                        <span class="o_stat_text">Log</span>
+                    </div>
+                </button>
+            </div>
+        </field>
+    </record>
+
+    <record id="ir_cron_starpay_log_gc" model="ir.cron">
+        <field name="name">Star-Pay: clear old log entries</field>
+        <field name="model_id" ref="model_starpay_request_log"/>
+        <field name="state">code</field>
+        <field name="code">model._gc()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

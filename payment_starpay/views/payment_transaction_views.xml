@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ask Star-Pay by hand. For the payer who says they paid when the
+         transaction says otherwise: one click runs the same trdp/verify the
+         app's poll and the cron run, and applies the answer. -->
+    <record id="payment_transaction_form_starpay" model="ir.ui.view">
+        <field name="name">Star-Pay Transaction Form</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button type="object"
+                        name="action_starpay_check_status"
+                        string="Check with Star-Pay"
+                        class="btn-secondary"
+                        groups="base.group_system"
+                        invisible="provider_code != 'starpay' or state not in ('draft', 'pending', 'error')"/>
+            </xpath>
+            <xpath expr="//field[@name='provider_reference']" position="after">
+                <field name="starpay_payment_type" invisible="provider_code != 'starpay' or not starpay_payment_type"/>
+                <field name="starpay_receipt_url" widget="url" invisible="provider_code != 'starpay' or not starpay_receipt_url"/>
+                <field name="starpay_external_reference" invisible="provider_code != 'starpay' or not starpay_external_reference"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

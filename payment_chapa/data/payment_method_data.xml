@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!--
+      Chapa is an aggregator: one checkout page behind which the payer picks a
+      bank, a wallet or a card. Odoo therefore sees a single payment method,
+      not one per underlying rail - the choice happens on Chapa's page, after
+      the handoff, and Odoo never learns which was used.
+
+      `active` is False so the method only appears once the provider is
+      enabled; `_get_default_payment_method_codes` activates it at that point.
+    -->
+    <record id="payment_method_chapa" model="payment.method">
+        <field name="name">Chapa</field>
+        <field name="code">chapa</field>
+        <field name="sequence">1000</field>
+        <field name="active">False</field>
+        <field name="image" type="base64" file="payment_chapa/static/img/chapa.png"/>
+        <field name="support_tokenization">False</field>
+        <field name="support_express_checkout">False</field>
+        <field name="support_manual_capture">none</field>
+        <!--
+          Chapa does document a refund endpoint, but it has not been exercised
+          against a live merchant account here. Declaring refund support the
+          module cannot actually perform would put a Refund button in front of
+          accounting staff that fails at the gateway, so this stays `none`
+          until the endpoint is confirmed.
+        -->
+        <field name="support_refund">none</field>
+        <!--
+          Deliberately no `supported_country_ids`: that field filters on the
+          *payer's* country, and the club has supporters abroad who pay
+          Ethiopian dues with an international card. Restricting to Ethiopia
+          would silently hide the provider from them.
+        -->
+        <field name="supported_currency_ids"
+               eval="[Command.set([
+                         ref('base.ETB'),
+                         ref('base.USD'),
+                     ])]"
+        />
+    </record>
+
+</odoo>

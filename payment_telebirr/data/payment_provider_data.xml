@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="payment_provider_telebirr" model="payment.provider">
+        <field name="name">telebirr</field>
+        <field name="code">telebirr</field>
+        <!-- Links the record to its module. account_payment's install hook
+             creates the account.payment.method only for providers it can find
+             this way; without it, no method, no journal line, and a confirmed
+             payment fails at the very last step. -->
+        <field name="module_id" ref="base.module_payment_telebirr"/>
+        <field name="redirect_form_view_id" ref="redirect_form"/>
+        <field name="allow_tokenization" eval="False"/>
+        <field name="image_128" type="base64" file="payment_telebirr/static/img/telebirr.png"/>
+        <field name="payment_method_ids"
+               eval="[Command.set([
+                         ref('payment_telebirr.payment_method_telebirr'),
+                     ])]"
+        />
+    </record>
+</odoo>

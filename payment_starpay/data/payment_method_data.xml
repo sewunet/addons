@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!--
+      Star-Pay is a single Ethiopian wallet, so one method covers the provider
+      exactly.
+
+      `active` is False so the method only appears once the provider is
+      enabled; `_get_default_payment_method_codes` activates it at that point.
+    -->
+    <record id="payment_method_starpay" model="payment.method">
+        <field name="name">Star-Pay</field>
+        <field name="code">starpay</field>
+        <field name="sequence">1000</field>
+        <field name="active">False</field>
+        <field name="image" type="base64" file="payment_starpay/static/img/starpay.png"/>
+        <field name="support_tokenization">False</field>
+        <field name="support_express_checkout">False</field>
+        <field name="support_manual_capture">none</field>
+        <!--
+          No refund endpoint is documented in the integration pack this module
+          was written against, so none is offered.
+        -->
+        <field name="support_refund">none</field>
+        <!-- Birr only. The payer's country is left unrestricted. -->
+        <field name="supported_currency_ids"
+               eval="[Command.set([
+                         ref('base.ETB'),
+                     ])]"
+        />
+    </record>
+
+</odoo>

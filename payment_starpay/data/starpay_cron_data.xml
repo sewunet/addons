@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The net under the callback. Star-Pay settles a payment by calling
+         the callbackURL; if that call never arrives (the server was down,
+         the signature secret was wrong), nothing else would ask again unless
+         the member reopened the app. This asks trdp/verify for every order
+         still open between ten minutes and a day old. -->
+    <record id="ir_cron_starpay_check_pending" model="ir.cron">
+        <field name="name">Star-Pay: verify payments still open</field>
+        <field name="model_id" ref="payment.model_payment_transaction"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_starpay_check_pending()</field>
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

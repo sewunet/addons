@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_provider_form" model="ir.ui.view">
+        <field name="name">telebirr Provider Form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <group invisible="code != 'telebirr'" name="telebirr_credentials">
+                    <field name="telebirr_base_url" string="Gateway URL"
+                           required="code == 'telebirr' and state != 'disabled'"/>
+                    <field name="telebirr_h5_url" string="Checkout URL"
+                           required="code == 'telebirr' and state != 'disabled'"/>
+                    <field name="telebirr_fabric_app_id" string="Fabric App ID"
+                           required="code == 'telebirr' and state != 'disabled'"/>
+                    <field name="telebirr_merchant_app_id" string="Merchant App ID"
+                           required="code == 'telebirr' and state != 'disabled'"/>
+                    <field name="telebirr_short_code" string="Short Code"
+                           required="code == 'telebirr' and state != 'disabled'"/>
+                    <field name="telebirr_app_secret" string="App Secret" password="True"
+                           required="code == 'telebirr' and state != 'disabled'"/>
+                    <field name="telebirr_private_key" string="Merchant Private Key (PEM)"
+                           required="code == 'telebirr' and state != 'disabled'"/>
+                    <field name="telebirr_public_key" string="telebirr Public Key (PEM)"/>
+                    <div colspan="2" class="text-muted">
+                        Notify URL: <code>&lt;your-domain&gt;/payment/telebirr/webhook</code>.
+                        Without the telebirr public key, notifications are refused.
+                    </div>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>
